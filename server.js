@@ -1,20 +1,30 @@
 var express = require("express"),
-    app = express(),
-    bodyParser = require('body-parser')
-    errorHandler = require('errorhandler'),
-    methodOverride = require('method-override'),
-    port = parseInt(process.env.PORT, 10) || 4567;
+	bodyParser = require('body-parser')
+	errorHandler = require('errorhandler'),
+	methodOverride = require('method-override');
 
-app.get("/", function (req, res) {
-  res.redirect("/index.html");
-});
+function run(port, rootDir){
+	var app = express(),
+		rootDir = rootDir || __dirname + '/',
+	    port = port || 4567;
 
-app.use(methodOverride());
-app.use(bodyParser());
-app.use(express.static(__dirname + '/public'));
-app.use(errorHandler({
-  dumpExceptions: true,
-  showStack: true
-}));
+	app.use(methodOverride());
+	app.use(bodyParser());
+	app.use(express.static(rootDir), {
+		redirect : true
+	});
+	app.use(errorHandler({
+	  dumpExceptions: true,
+	  showStack: true
+	}));
 
-app.listen(port);
+	console.log('start static server on port ' + port + ' with root dir : ' + rootDir)
+	app.listen(port);
+
+};
+
+if(require.main === module){
+	run(process.env.PORT);
+}else{
+	module.exports = run;
+}
